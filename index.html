@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Танцюючий Покемон</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9d56e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .spawn-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            z-index: 10;
+        }
+
+        .throw-button {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4a4e69;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .throw-button:hover {
+            background-color: #9a8c98;
+        }
+
+        .pokeball {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .pokemon {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        .pokemon-blur {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(30px) brightness(2) hue-rotate(90deg);
+            mix-blend-mode: color-dodge;
+            opacity: 0;
+        }
+
+        @keyframes pokeball-throw {
+            0% { 
+                top: 100%; 
+                opacity: 1;
+            }
+            70% { 
+                top: 50%; 
+                transform: translate(-50%, -50%) rotate(720deg);
+            }
+            100% { 
+                top: -20%; 
+                opacity: 0;
+                transform: translate(-50%, -50%) rotate(1080deg);
+            }
+        }
+
+        @keyframes pokemon-appear {
+            0% { 
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            70% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes blur-effect {
+            0%, 100% { opacity: 0; }
+            20%, 80% { opacity: 0.7; }
+        }
+
+        @keyframes dance-move {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg) translateY(0); }
+            25% { transform: translate(-50%, -50%) rotate(-10deg) translateY(-10px); }
+            50% { transform: translate(-50%, -50%) rotate(10deg) translateY(10px); }
+            75% { transform: translate(-50%, -50%) rotate(-10deg) translateY(-10px); }
+        }
+
+        @keyframes subtle-hover {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) translateY(-15px) rotate(-2deg); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .dancing {
+            animation: dance-move 1s ease-in-out infinite;
+        }
+
+        .subtle-hover {
+            animation: subtle-hover 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="starryBackground"></div>
+    <div class="spawn-container" id="spawnContainer">
+        <button class="throw-button" onclick="spawnPokemon()">Кинути покебол</button>
+    </div>
+
+    <script>
+        function createStars() {
+            const background = document.getElementById('starryBackground');
+            const starCount = 100;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random();
+                
+                background.appendChild(star);
+            }
+        }
+
+        function spawnPokemon() {
+            const container = document.getElementById('spawnContainer');
+            
+            // Очистити попередній вміст
+            const existingElements = container.querySelectorAll('.pokeball, .pokemon, .pokemon-blur');
+            existingElements.forEach(el => el.remove());
+
+            // Створити покебол
+            const pokeball = document.createElement('div');
+            pokeball.classList.add('pokeball');
+            container.appendChild(pokeball);
+
+            // Анімація кидка покебола
+            pokeball.style.animation = 'pokeball-throw 1.5s forwards';
+
+            // Створити покемона та його розмиття
+            setTimeout(() => {
+                const pokemonUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png';
+                
+                const pokemonBlur = document.createElement('div');
+                pokemonBlur.classList.add('pokemon-blur');
+                pokemonBlur.style.backgroundImage = `url('${pokemonUrl}')`;
+                container.appendChild(pokemonBlur);
+
+                const pokemon = document.createElement('div');
+                pokemon.classList.add('pokemon');
+                pokemon.style.backgroundImage = `url('${pokemonUrl}')`;
+                container.appendChild(pokemon);
+
+                // Анімація появи покемона
+                pokemonBlur.style.animation = 'blur-effect 1.5s forwards';
+                pokemon.style.animation = 'pokemon-appear 1.5s forwards';
+
+                // Додати танцювальну анімацію через секунду
+                setTimeout(() => {
+                    pokemon.classList.add('dancing');
+                    pokemonBlur.classList.add('dancing');
+                    
+                    // Додати легкий рух після танцю
+                    setTimeout(() => {
+                        pokemon.classList.remove('dancing');
+                        pokemonBlur.classList.remove('dancing');
+                        pokemon.classList.add('subtle-hover');
+                        pokemonBlur.classList.add('subtle-hover');
+                    }, 1000);
+                }, 1000);
+            }, 750);
+        }
+
+        // Створення зірок при завантаженні сторінки
+        window.onload = createStars;
+    </script>
+</body>
+</html>
