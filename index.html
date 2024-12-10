@@ -189,19 +189,15 @@
         function spawnPokemon() {
             const container = document.getElementById('spawnContainer');
             
-            // Очистити попередній вміст
             const existingElements = container.querySelectorAll('.pokeball, .pokemon, .pokemon-blur');
             existingElements.forEach(el => el.remove());
 
-            // Створити покебол
             const pokeball = document.createElement('div');
             pokeball.classList.add('pokeball');
             container.appendChild(pokeball);
 
-            // Анімація кидка покебола
             pokeball.style.animation = 'pokeball-throw 1.5s forwards';
 
-            // Створити покемона та його розмиття
             setTimeout(() => {
                 const pokemonUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png';
                 
@@ -215,16 +211,13 @@
                 pokemon.style.backgroundImage = `url('${pokemonUrl}')`;
                 container.appendChild(pokemon);
 
-                // Анімація появи покемона
                 pokemonBlur.style.animation = 'blur-effect 1.5s forwards';
                 pokemon.style.animation = 'pokemon-appear 1.5s forwards';
 
-                // Додати танцювальну анімацію через секунду
                 setTimeout(() => {
                     pokemon.classList.add('dancing');
                     pokemonBlur.classList.add('dancing');
                     
-                    // Додати легкий рух після танцю
                     setTimeout(() => {
                         pokemon.classList.remove('dancing');
                         pokemonBlur.classList.remove('dancing');
@@ -235,7 +228,6 @@
             }, 750);
         }
 
-        // Створення зірок при завантаженні сторінки
         window.onload = createStars;
     </script>
 </body>
